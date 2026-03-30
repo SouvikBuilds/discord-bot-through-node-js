@@ -26,15 +26,15 @@ client.on(Events.ClientReady, (readyClient) => {
   console.log(`[LOG]: ${readyClient.user.tag} logged in`);
 });
 
-client.on(Events.MessageCreate, (message) => {
-  if (message.author.bot) return;
-  if (
-    message.content.trim().toLowerCase() === "hi" ||
-    message.content.trim().toLowerCase() === "hello"
-  ) {
-    message.channel.send("Hi, From Bot 🤖");
-  }
-});
+// client.on(Events.MessageCreate, (message) => {
+//   if (message.author.bot) return;
+//   if (
+//     message.content.trim().toLowerCase() === "hi" ||
+//     message.content.trim().toLowerCase() === "hello"
+//   ) {
+//     message.channel.send("Hi, From Bot 🤖");
+//   }
+// });
 
 client.on(Events.TypingStart, (message) => {
   console.log(`${message.user.tag} is typing in ${message.channel.name}`);
@@ -150,4 +150,33 @@ client.on(Events.InteractionCreate, async (interaction) => {
   }
 });
 
+function splitMessage(text, maxLength = 2000) {
+  const chunks = [];
+  let start = 0;
+  while (start < text.length) {
+    chunks.push(text.slice(start, start + maxLength));
+    start += maxLength;
+  }
+
+  return chunks;
+}
+
+client.on(Events.MessageCreate, async (message) => {
+  if (message.author.bot) return;
+  try {
+    await message.channel.sendTyping();
+    const messageContent = message.content;
+    const reply = await askAi(messageContent);
+    const chunks = splitMessage(reply);
+    for (let i = 0; i < chunks.length; i++) {
+      const chunk = chunks[i];
+      if (chunk.trim().length > 0) {
+        await message.channel.send(chunk);
+      }
+    }
+  } catch (error) {
+    console.log("Error: ", error);
+    message.channel.send("Error Occured while generating Story");
+  }
+});
 client.login(process.env.TOKEN);
