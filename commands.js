@@ -19,6 +19,18 @@ const commands = [
       },
     ],
   },
+  {
+    name: "ask",
+    description: "Give answers for any question of doubt",
+    options: [
+      {
+        name: "question",
+        type: 3,
+        description: "Enter the question",
+        required: true,
+      },
+    ],
+  },
 ];
 
 const rest = new REST({ version: 10 }).setToken(process.env.TOKEN);
