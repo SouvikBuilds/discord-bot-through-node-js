@@ -31,6 +31,24 @@ const commands = [
       },
     ],
   },
+  {
+    name: "debug",
+    description: "Debug Your Code",
+    options: [
+      {
+        name: "code",
+        type: 3,
+        description: "Paste your code",
+        required: true,
+      },
+      {
+        name: "error",
+        type: 3,
+        description: "Error message (optional)",
+        required: false,
+      },
+    ],
+  },
 ];
 
 const rest = new REST({ version: 10 }).setToken(process.env.TOKEN);

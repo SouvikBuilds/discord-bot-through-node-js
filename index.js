@@ -103,4 +103,51 @@ client.on(Events.InteractionCreate, async (interaction) => {
   }
 });
 
+client.on(Events.InteractionCreate, async (interaction) => {
+  if (!interaction.isChatInputCommand()) return;
+  if (interaction.commandName === "debug") {
+    try {
+      const code = interaction.options.getString("code");
+      const error = interaction.options.getString("error");
+
+      await interaction.deferReply();
+
+      const prompt = `You are an expert debugging assistant.
+
+        Analyze the following code and:
+        1. Identify the problem
+        2. Explain the issue clearly
+        3. Provide a corrected version
+        4. Also detect programming language automatically.
+        5. Return corrected code inside proper code blocks (like js, python etc).
+        6. Explain in simple terms suitable for beginners.
+        7. and format in the following pattern:
+                Problem:
+                Fix:
+                Explanation:
+
+        Code:
+        ${code}
+
+        Error:
+        ${error || "Not provided"}`;
+
+      const answer = await askAi(prompt);
+      //   console.log(answer);
+
+      const embed = new EmbedBuilder()
+        .setTitle("Debug Result")
+        .setDescription(`Answer: ${answer}`)
+        .setColor("Yellow");
+
+      interaction.editReply({
+        embeds: [embed],
+      });
+    } catch (error) {
+      console.log("Error: ", error);
+      interaction.editReply("Something Went Wrong while debugging code");
+    }
+  }
+});
+
 client.login(process.env.TOKEN);
